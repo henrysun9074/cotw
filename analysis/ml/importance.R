@@ -147,7 +147,6 @@ sum(met_plot_df$non_scler_ubiquity == 0, na.rm = TRUE)
 
 
 #################################################################################
-
 # for figure S4
 
 met_presence_long <- df %>%
