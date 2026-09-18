@@ -18,7 +18,7 @@ library(cowplot)
 library(here)
 
 # read data
-df <- read.csv(here("Cleaned data CSVs", "ITS2full_PQN.csv"))
+df <- read.csv(here("Cleaned data CSVs", "ITS2full_PQN_Sep17.csv"))
 df$X <- NULL
 met_df <- read.csv(here("Cleaned data CSVs", "merged_met_plot_df.csv"))
 
@@ -195,7 +195,7 @@ ggsave(
 
 ################################################################################
 
-# Figure 3A
+# Figure 4A
 
 bar2_df <- df %>%
   filter(
@@ -266,7 +266,7 @@ bar3
 
 ################################################################################
 
-# Figure 3B
+# Figure 4B
 # by location
 
 bar4_df <- df %>%
@@ -299,7 +299,7 @@ bar4 <- ggplot(bar4_df, aes(x = loc_label, y = prop, fill = ITS2.Letter)) +
 bar4
 
 ################################################################################
-# Figure 3D
+# Figure 4D
 # richness 
 
 metabolite_cols <- grep("^x", names(df), value = TRUE)
@@ -318,9 +318,6 @@ richness_df <- df %>%
 
 kruskal_test_res <- richness_df %>%
   kruskal_test(MetabolomicRichness ~ ITS2.Letter)
-# .y.                     n statistic    df         p method        
-# * <chr>               <int>     <dbl> <int>     <dbl> <chr>         
-# 1 MetabolomicRichness   254      25.8     3 0.0000103 Kruskal-Wallis
 
 stat.test <- richness_df %>%
   dunn_test(MetabolomicRichness ~ ITS2.Letter, p.adjust.method = "BH") %>%
@@ -350,7 +347,7 @@ richness <- ggplot(richness_df, aes(x = ITS2.Letter, y = MetabolomicRichness, fi
   )
 
 ################################################################################
-# Figure 3E
+# Figure 4E
 # Shannon entropy
 
 shannon_index <- function(counts) {
@@ -429,7 +426,7 @@ entropy <- ggplot(entropy_df, aes(x = ITS2.Letter, y = MetabolicEntropy, fill = 
 
 ################################################################################
 
-## pcoas Figure 3C, S8, S9B
+## pcoas Figure 4C, S8, S9B
 ## filter to remove "mix" samples
 keep_genera <- c("Symbiodinium", "Breviolum", "Cladocopium", "Durusdinium")
 
@@ -515,7 +512,7 @@ ggsave(here("misc", "figs/pqn", "its2_permanova_location.pdf"),
        p, width = 7, height = 6, dpi = 300)
 ################################################################################
 
-# Figure 3C
+# Figure 4C
 
 its2_permanova_result <- adonis2(
   bray_curtis_4g ~ ITS2.Letter,
@@ -667,15 +664,15 @@ target_order <- c("Durusdinium", "Cladocopium", "Breviolum", "Symbiodinium")
 upset_data <- upset_input[, -1]
 UpSetR::upset(
   upset_data,
-  sets = target_order, # Uses your ITS2.Letter groups
+  sets = target_order,
   keep.order = TRUE,
   main.bar.color = "gray20",
-  sets.bar.color = its2_palette[target_order], # Match your existing palette
+  sets.bar.color = its2_palette[target_order],
   order.by = "freq", 
   decreasing = TRUE,
   point.size = 3.5, 
   line.size = 1.5,
-  text.scale = c(1.3, 1.3, 1, 1, 1.5, 1) # Adjust text sizes for labels
+  text.scale = c(1.3, 1.3, 1, 1, 1.5, 1)
 )
 
 ## ComplexUpset
@@ -761,7 +758,7 @@ print(upset_plot)
 
 ################################################################################
 
-## combine plots for Figure 3
+## combine plots for Figure 4
 
 shared_legend <- get_legend(
   bar2 + 

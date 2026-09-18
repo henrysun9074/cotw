@@ -41,7 +41,7 @@ The `analysis/ml/` directory contains:
 * Serialized `.joblib` files for trained random forest and gradient boosting models  
 * `hpt.py` code for hyperparameter tuning and training random forest and gradient boosting models  
 * `inference.ipynb` code for evaluating the trained models on test set and outputting impurity-based feature importance metrics  
-* `importance.R` code for visualizing important metabolite features  
+* `importance.R` code for visualizing important metabolite features 
 
 ## Contact
 

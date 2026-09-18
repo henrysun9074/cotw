@@ -791,3 +791,207 @@ true_final_figure <- plot_grid(
 ggsave(here("misc", "figs/pqn", "fig5_new.pdf"), 
        true_final_figure, width = 15, height = 15, dpi = 600, bg = "white")
 
+
+#################################################################################
+
+## reload below for comparison with Curacao only training
+
+met_df <- read.csv(here("Cleaned data CSVs", "merged_met_plot_df.csv"))
+
+curacao_ml_df <- read.csv(here("misc", "featureimportanceallmets_Curacao.csv"))
+
+
+met_df <- met_df %>%
+  rename(
+    XGBoost_Importance_All = XGBoost_Importance,
+    RandomForest_Importance_All = RandomForest_Importance
+  )
+
+curacao_ml_df <- curacao_ml_df %>%
+  rename(metabolite = Feature) %>%
+  left_join(
+    met_df %>%
+      select(
+        metabolite,
+        XGBoost_Importance_All,
+        RandomForest_Importance_All
+      ),
+    by = "metabolite"
+  )
+
+##
+met_df <- met_df %>%
+  mutate(
+    compound_class = recode(
+      compound_class,
+      "Carotenoids (C40, Î²-Î²)" = "Carotenoids",
+      "Oxidized glycerophospholipids" = "OxPL",
+      "Glycerophosphoethanolamines" = "GPEtn",
+      "Neutral glycosphingolipids" = "Neutral GSL",
+      "Triacylglycerols" = "TAG",
+      "Diacylglycerols" = "DAG",
+      "Prenyl quinone meroterpenoids" = "TQ/THQs"
+    )
+  )
+
+target_classes <- met_df %>%
+  count(compound_class, sort = TRUE) %>%
+  slice_head(n = 20) %>%
+  pull(compound_class) %>%
+  trimws()
+
+target_classes <- c(
+  setdiff(target_classes, "Unknown"),
+  intersect(target_classes, "Unknown")
+)
+
+### colors
+provided_hex <- c(
+  "#1F77B4FF", "#FF7F0EFF", "#2CA02CFF", "#D62728FF",
+  "#9467BDFF", "#8C564BFF", "#E377C2FF", "deepskyblue4", "#BCBD22FF",
+  "#17BECFFF", "#AEC7E8FF", "#FFBB78FF", "#98DF8AFF", "#FF9896FF",
+  "#C5B0D5FF", "#C49C94FF", "#F7B6D2FF", "#9EDAE5FF", "#DBDB8DFF",
+  "#C7C7C7FF"
+)
+
+spec_colors <- setNames(provided_hex[seq_along(target_classes)], target_classes)
+
+final_palette <- c(spec_colors, "Other" = "gray30")
+ordered_levels <- c(target_classes, "Other")
+
+origin_shapes <- c("Host" = 16, "Symbiont" = 3, "Both" = 17, "Unknown" = 8)
+
+curacao_ml_df <- curacao_ml_df %>%
+  left_join(
+    met_df %>% select(metabolite, compound_class) %>% distinct(),
+    by = "metabolite",
+    relationship = "many-to-one"
+  ) %>%
+  mutate(
+    compound_class = trimws(compound_class),
+    compound_class = if_else(
+      compound_class %in% target_classes,
+      compound_class,
+      "Other"
+    ),
+    compound_class = factor(compound_class, levels = ordered_levels)
+  )
+
+### plot correlation b/w main and this
+plot_importance <- function(data, x_col, y_col, model_name) {
+  plot_data <- data %>%
+    filter(is.finite(.data[[x_col]]), is.finite(.data[[y_col]]))
+  
+  ggscatter(
+    plot_data,
+    x = x_col,
+    y = y_col,
+    color = "compound_class",
+    palette = final_palette,
+    size = 2.5,
+    alpha = 0.75,
+    xlab = paste0(model_name, " Importance (all samples)"),
+    ylab = paste0(model_name, " Importance (Curaçao)"),
+    ggtheme = theme_classic(base_size = 12)
+  ) +
+    stat_cor(
+      data = plot_data,
+      aes(x = .data[[x_col]], y = .data[[y_col]]),
+      inherit.aes = FALSE,
+      method = "spearman",
+      cor.coef.name = "rho",
+      label.x.npc = "left",
+      label.y.npc = "top",
+      size = 4
+    ) +
+    labs(color = "Compound Class") +
+    theme(legend.text = element_text(size = 12))
+}
+
+p_xgb <- plot_importance(
+  curacao_ml_df,
+  "XGBoost_Importance_All",
+  "XGBoost_Importance",
+  "XGBoost"
+)
+
+p_rf <- plot_importance(
+  curacao_ml_df,
+  "RandomForest_Importance_All",
+  "RandomForest_Importance",
+  "Random Forest"
+)
+
+p_xgb
+p_rf
+
+shared_legend <- get_legend(
+  p_xgb +
+    theme(legend.position = "top") +
+    guides(color = guide_legend(nrow = 3, byrow = TRUE))
+)
+plots <- plot_grid(
+  p_xgb + theme(legend.position = "none"),
+  p_rf + theme(legend.position = "none"),
+  ncol = 2,
+  labels = c("A", "B"),
+  align = "hv"
+)
+
+combined_plot <- plot_grid(
+  shared_legend,
+  plots,
+  ncol = 1,
+  rel_heights = c(0.25, 1)
+)
+
+combined_plot
+
+ggsave(
+  here("misc", "figs/pqn", "curacao_ml.pdf"),
+  combined_plot,
+  width = 14,
+  height = 9,
+  dpi = 300
+)
+
+## print number of nonzero feature importance metabolites for XGBoost and RF for Curacao
+curacao_importance_counts <- curacao_ml_df %>%
+  summarise(
+    XGBoost = sum(XGBoost_Importance > 0, na.rm = TRUE),
+    RF = sum(RandomForest_Importance > 0.0, na.rm = TRUE)
+  ) %>%
+  pivot_longer(
+    everything(),
+    names_to = "Model",
+    values_to = "n_metabolites"
+  )
+print(curacao_importance_counts)
+
+## print compound class distribution for nonzero feature importance metabolites for Curacao
+curacao_class_distribution <- bind_rows(
+  curacao_ml_df %>%
+    filter(!is.na(XGBoost_Importance), XGBoost_Importance > 0) %>%
+    count(compound_class, name = "n_metabolites") %>%
+    mutate(Model = "XGBoost"),
+  
+  curacao_ml_df %>%
+    filter(!is.na(RandomForest_Importance), RandomForest_Importance > 0.001) %>%
+    count(compound_class, name = "n_metabolites") %>%
+    mutate(Model = "RF")
+) %>%
+  group_by(Model) %>%
+  mutate(
+    proportion = n_metabolites / sum(n_metabolites),
+    percentage = 100 * proportion
+  ) %>%
+  ungroup() %>%
+  select(
+    Model,
+    compound_class,
+    n_metabolites,
+    proportion,
+    percentage
+  ) %>%
+  arrange(Model, desc(n_metabolites))
+print(curacao_class_distribution, n = Inf)

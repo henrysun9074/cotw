@@ -46,6 +46,7 @@ df <- df %>%
     host_family = factor(host_family),
     host_phylum = factor(host_phylum)
   )
+
 # color palettes
 cols_bleaching <- c(
   "Bleached" = "#FF847CFF", 
@@ -108,7 +109,7 @@ origin_shapes <- c("Host" = 16, "Symbiont" = 3, "Both" = 17, "Unknown" = 8)
 
 ################################################################################
 
-# richness by host_family - fig 4a
+# richness by host_family - fig 3a
 
 scler_df <- df %>% filter (df$scleractinia == 1)
 scler_df$richness <- rowSums(scler_df %>% select(starts_with("x")) > 0, na.rm = TRUE)
@@ -159,7 +160,7 @@ print(p_family_richness)
 ################################################################################
 
 ## flower plot modified to show number of unique metabolites in each family
-## fig 4b
+## fig 3b
 
 draw_flower <- function(data, group_var) {
   group_summary <- data %>%
@@ -278,7 +279,7 @@ core_fisher <- fisher(core_df, met_df) %>%
 
 
 #######################
-# venn by host_origin - fig 4c
+# venn by host_origin - fig 3c
 
 core_filtered <- core_df %>% 
   filter(refined_origin != "Unknown")
@@ -315,7 +316,7 @@ p_a <- ggvenn(list_all, fill_color = venn_fill, stroke_size = 0.5, set_name_size
 
 ################################################################################
 
-# volcano - fig 4d
+# volcano - fig 3d
 # choose only metabolites in core_df
 core_abundance_df <- df %>%
   select(sample, all_of(core_metabolite_ids), scleractinia)
@@ -450,7 +451,7 @@ final_multipanel <- plot_grid(
 )
 
 save_plot(
-  filename = here("misc", "figs/pqn", "fig4.pdf"),
+  filename = here("misc", "figs/pqn", "fig3.pdf"),
   plot = final_multipanel,
   base_width = 16,
   base_height = 20,
