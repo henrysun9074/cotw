@@ -48,7 +48,7 @@ cols_phylum <- c("#24492EFF", "#015B58FF", "#2C6184FF", "#59629BFF", "#89689DFF"
 cols_sclero    <- c("1" = "#DE7862FF", "0" = "#D8AF39FF")
 
 
-## Collectors Curves - figure S2
+## Collectors Curves
 comm_matrix = df |>
   select(c(sample, grep("^x", names(df), value = TRUE))) |>
   column_to_rownames(var = "sample")

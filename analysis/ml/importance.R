@@ -147,7 +147,6 @@ sum(met_plot_df$non_scler_ubiquity == 0, na.rm = TRUE)
 
 
 #################################################################################
-# for figure S4
 
 met_presence_long <- df %>%
   pivot_longer(
@@ -216,7 +215,6 @@ met_summary_classed$refined_origin <- factor(
   levels = c("Host", "Symbiont", "Both", "Unknown")
 )
 
-### Figure S4A
 pa <- ggplot(met_summary_classed, aes(x = ubiquity_all, y = avg_abundance)) +
   geom_point(
     aes(color = display_class, shape = refined_origin),
@@ -251,8 +249,6 @@ pa <- ggplot(met_summary_classed, aes(x = ubiquity_all, y = avg_abundance)) +
 pa
 
 #################################################################################
-
-### Figure S4B
 
 ## code to make this plot using only Scleractinian samples and metabolites (regardless of origin)
 ## that are only found in Scleractinia
@@ -357,8 +353,6 @@ rf_origin_summary <- rf_plot_data %>%
 
 #################### make feature importance plots ###########################
 
-# Figure 5A
-
 p1 <- ggbarplot(xgb_plot_data, x = "metabolite", y = "XGBoost_Importance",
                 fill = "display_class", color = "transparent",
                 xlab = "Metabolite", ylab = "XGBoost Feature Importance") +
@@ -371,8 +365,6 @@ p1 <- ggbarplot(xgb_plot_data, x = "metabolite", y = "XGBoost_Importance",
         legend.position = "none")
 p1
 
-# Figure 5B
-
 p2 <- ggbarplot(rf_plot_data, x = "metabolite", y = "RandomForest_Importance",
                 fill = "display_class", color = "transparent",
                 xlab = "Metabolite", ylab = "RF Feature Importance") +
@@ -384,9 +376,6 @@ p2 <- ggbarplot(rf_plot_data, x = "metabolite", y = "RandomForest_Importance",
         axis.ticks.x = element_blank(),
         legend.position = "none")
 p2
-
-
-# Figure 5C
 
 top_labels <- met_plot_df %>%
   mutate(dist = sqrt(XGBoost_Importance^2 + RandomForest_Importance^2)) %>%
@@ -480,7 +469,6 @@ sort(table(met_summary_rf$compound_class), decreasing = TRUE)
 # 119 annotations, 148 unknown
 # 48 TAG, 18 ceramides, 12 glycerophosphocholines, 7 MADAG, everything else 5 or fewer
 
-# Figure 5D
 p_xgb_ubiq_scatter <- ggplot(met_summary_xgb, aes(x = non_scler_ubiquity, y = scler_ubiquity)) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray60") +
   geom_point(
@@ -504,8 +492,6 @@ p_xgb_ubiq_scatter <- ggplot(met_summary_xgb, aes(x = non_scler_ubiquity, y = sc
   )
 p_xgb_ubiq_scatter
 
-
-# Figure 5E
 p_rf_ubiq_scatter <- ggplot(met_summary_rf, aes(x = non_scler_ubiquity, y = scler_ubiquity)) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray60") +
   geom_point(
@@ -530,8 +516,6 @@ p_rf_ubiq_scatter <- ggplot(met_summary_rf, aes(x = non_scler_ubiquity, y = scle
 p_rf_ubiq_scatter
 
 ################################################################################
-
-# volcano plot for Figure S15
 
 comm_long <- df %>%
   pivot_longer(
@@ -698,7 +682,7 @@ ggsave(
 
 #################################################################################
 
-# combine 5A-E into single figure 5
+# combine figure 5
 
 levels(met_plot_df$display_class) <- str_wrap(levels(met_plot_df$display_class), width = 20)
 names(final_palette) <- str_wrap(names(final_palette), width = 20)
@@ -738,8 +722,6 @@ legend_dummy <- ggplot(met_plot_df, aes(x = XGBoost_Importance, y = RandomForest
   )
 unified_legend <- get_legend(legend_dummy)
 
-
-####### figure S4
 row_ab_ubqabundance <- plot_grid(pa + theme(legend.position = "none"),
                                  pb + theme(legend.position = "none"), 
                                  labels = c("A", "B"),

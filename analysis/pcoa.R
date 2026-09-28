@@ -58,7 +58,7 @@ bray_curtis <- vegdist(permanova_numeric_data2, method = "bray")
 meta2 <- df[keep_rows, , drop = FALSE]
 
 # ################################################################################
-# #Scleractinia vs nonScleractinia PERMANOVA - Figure 2A
+# #Scleractinia vs nonScleractinia PERMANOVA 
 
 # compute BC dissimilarity
 bray_curtis_scleractinia <- vegdist(permanova_numeric_data2, method = "bray")
@@ -120,7 +120,7 @@ p <- ggplot(pcoa_points, aes(x = PCoA1, y = PCoA2,
   theme(legend.position = "right")
 
 ################################################################################
-#Location + bleaching status PERMANOVA - Figure S6A
+#Location + bleaching status PERMANOVA 
 
 # drop NAs for bleaching
 keep_rows <- complete.cases(permanova_numeric_data2) & 
@@ -195,7 +195,7 @@ p2 <- ggplot(pcoa_points2, aes(x = PCoA1, y = PCoA2, color = location)) +
 
 
 ################################################################################
-## Location by symbiont potential PERMANOVA - Figure S6B
+## Location by symbiont potential PERMANOVA
 
 keep_rows <- !is.na(meta2$symbiont.potential)
 meta_symb <- meta2[keep_rows, , drop = FALSE]
@@ -251,7 +251,7 @@ p3 <- ggplot(pcoa_points3, aes(x = PCoA1, y = PCoA2, color = location)) +
   theme(legend.position = "right")
 
 ################################################################################
-## Permanova bleaching by symbiont potential - Figure S6C
+## Permanova bleaching by symbiont potential
 
 keep_rows <- !is.na(meta2$bleaching) & !is.na(meta2$symbiont.potential)
 meta_sub <- meta2[keep_rows, , drop = FALSE]
@@ -384,7 +384,7 @@ ggsave(here("misc", "figs/pqn", "pcoa_bleaching.jpg"), p4, width = 8, height = 6
 
 
 ################################################################################
-## Symbiont potential alone PERMANOVA - Table S3
+## Symbiont potential alone PERMANOVA
 
 desired_levels <- na.omit(unique(as.character(df$symbiont.potential)))
 permanova_numeric_data <- df %>% select(starts_with("x"))
@@ -512,7 +512,7 @@ p6 <- ggplot(pcoa_points, aes(x = PCoA1, y = PCoA2, color = location, fill = loc
 ################################################################################
 ################################################################################
 
-# Box plots for Figure 2C-E
+# Box plots
 
 metabolite_data <- df %>%
   select(starts_with("x"))
@@ -541,7 +541,7 @@ plot_data_clean <- plot_data %>%
   mutate(group = fct_relevel(group, "Scleractinia", "Other"))
 cols_sclero_named <- c("Scleractinia" = "#DE7862FF", "Other" = "#D8AF39FF")
 
-########### ubiquity - Figure 2E ###################
+########### ubiquity  ###################
 
 plot_data_clean <- plot_data %>%
   mutate(group = factor(group)) %>% 
@@ -583,7 +583,7 @@ p_ubiquity <- ggplot(plot_data_clean, aes(x = group, y = avg_ubiquity, fill = gr
   )
 print(p_ubiquity)
 
-########### Richness - figure 2C ################### 
+########### Richness ################### 
 richness_values <- rowSums(metabolite_data > 0, na.rm = TRUE)
 plot_data_clean$richness <- richness_values
 
@@ -614,7 +614,7 @@ p_richness <- ggplot(plot_data_clean, aes(x = group, y = richness, fill = group,
   )
 print(p_richness)
 
-############ shannon diversity - Figure 2D
+############ shannon diversity ############ 
 shannon_values <- diversity(metabolite_data, index = "shannon")
 plot_data_clean$shannon  <- shannon_values
 
@@ -648,7 +648,7 @@ print(p_entropy)
 
 ################################################################################
 ################################################################################
-# Dendrograms - Figure 2B
+# Dendrogram
 
 avg_metabolite_values_family <- df |> 
   group_by(host_family) |> 
@@ -824,7 +824,6 @@ dend_labels_phylum <- dend_data$labels %>%
     text_color_group = if_else(is_scler == TRUE, "Scleractinia_Color", phylum)
   )
 
-# Save fig 2b dendrogram
 p_dendro <- ggplot() +
   geom_segment(data = dend_segments, 
                aes(x = x, y = y, xend = xend, yend = yend, color = branch_color),
@@ -861,7 +860,7 @@ p_dendro <- ggplot() +
   ))
 
 ################################################################################
-# combine plots with cowplot to make final Figure 2
+# combine plots 
 
 legend_sclero <- get_legend(
   p + 
@@ -920,7 +919,7 @@ ggsave(here("misc", "figs/pqn", "fig2.pdf"), final_plot_legend, width = 18, heig
 
 ################################################################################
 ################################################################################
-# Curacao only - Figure S5
+# Curacao only 
 
 df_cur <- df %>% 
   filter(location == "Curaçao", !is.na(scleractinia))

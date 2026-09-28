@@ -161,8 +161,6 @@ print(na_breakdown)
 
 ################################################################################
 
-# Figure S7
-
 its2_barplot <- df %>%
   filter(!is.na(ITS2.Letter), ITS2.Letter != "") %>%
   count(ITS2.Letter) %>%
@@ -194,8 +192,6 @@ ggsave(
 )
 
 ################################################################################
-
-# Figure 4A
 
 bar2_df <- df %>%
   filter(
@@ -230,8 +226,6 @@ bar2
 
 ################################################################################
 
-# Figure S9A
-
 bar3_df <- df %>%
   filter(
     !is.na(ITS2.Letter), ITS2.Letter != "",
@@ -265,8 +259,6 @@ bar3 <- ggplot(bar3_df, aes(x = bleaching_label, y = prop, fill = ITS2.Letter, a
 bar3
 
 ################################################################################
-
-# Figure 4B
 # by location
 
 bar4_df <- df %>%
@@ -299,7 +291,6 @@ bar4 <- ggplot(bar4_df, aes(x = loc_label, y = prop, fill = ITS2.Letter)) +
 bar4
 
 ################################################################################
-# Figure 4D
 # richness 
 
 metabolite_cols <- grep("^x", names(df), value = TRUE)
@@ -347,7 +338,6 @@ richness <- ggplot(richness_df, aes(x = ITS2.Letter, y = MetabolomicRichness, fi
   )
 
 ################################################################################
-# Figure 4E
 # Shannon entropy
 
 shannon_index <- function(counts) {
@@ -426,7 +416,7 @@ entropy <- ggplot(entropy_df, aes(x = ITS2.Letter, y = MetabolicEntropy, fill = 
 
 ################################################################################
 
-## pcoas Figure 4C, S8, S9B
+## pcoas
 ## filter to remove "mix" samples
 keep_genera <- c("Symbiodinium", "Breviolum", "Cladocopium", "Durusdinium")
 
@@ -454,9 +444,8 @@ permanova_matrix <- as.matrix(numeric_only_data)
 bray_curtis_4g <- vegdist(permanova_matrix, method = "bray")
 
 ################################################################################
-
-# Figure S8
 # nested permanova
+
 permanova_result <- adonis2(
   bray_curtis_4g ~ ITS2.Letter / location,
   data = meta2,
@@ -512,8 +501,6 @@ ggsave(here("misc", "figs/pqn", "its2_permanova_location.pdf"),
        p, width = 7, height = 6, dpi = 300)
 ################################################################################
 
-# Figure 4C
-
 its2_permanova_result <- adonis2(
   bray_curtis_4g ~ ITS2.Letter,
   data = meta2,
@@ -565,8 +552,6 @@ p2 <- ggplot(pcoa_points, aes(x = PCoA1, y = PCoA2, color = ITS2.Letter, fill = 
 p2
 
 ################################################################################
-
-#Figure S9B
 
 bleaching_permanova_result <- adonis2(
   bray_curtis_4g ~ ITS2.Letter / bleaching,
@@ -758,7 +743,7 @@ print(upset_plot)
 
 ################################################################################
 
-## combine plots for Figure 4
+## combine plots
 
 shared_legend <- get_legend(
   bar2 + 
@@ -818,7 +803,6 @@ ggsave(
 
 ################################################################################
 
-# Combine Figure S9
 bar3 <- bar3 + theme(legend.position = "none")
 bleach_its2 <- plot_grid(bar3, p3, labels = c ("A","B"), label_size = 18,ncol = 1)
 ggsave(
@@ -830,7 +814,6 @@ ggsave(
 )
 
 ################################################################################
-# Figure S10
 ## compound class analysis - volcano plots
 
 target_genera <- c("Symbiodinium", "Breviolum", "Cladocopium", "Durusdinium")

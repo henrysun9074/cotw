@@ -101,8 +101,6 @@ volcano_results <- stats_data %>%
 ########################################
 # just refined origin color
 
-# Figure S3A
-
 plot_data_volcano <- volcano_results %>%
   inner_join(met_df %>% select(metabolite, refined_origin), by = "metabolite")
 
@@ -203,7 +201,6 @@ class_colors <- final_palette[classes]
 
 sig_threshold <- -log10(0.05)
 
-# build plot for Figure S3B
 p_volcano2 <- ggplot(plot_data_volcano, aes(x = log2FC, y = neg_log_p_adj)) +
   geom_vline(xintercept = c(-2, 2), linetype = "dashed", color = "grey70") +
   geom_hline(yintercept = sig_threshold, linetype = "dashed", color = "grey70", linewidth = 0.8) +

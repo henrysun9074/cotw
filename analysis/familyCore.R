@@ -109,7 +109,7 @@ origin_shapes <- c("Host" = 16, "Symbiont" = 3, "Both" = 17, "Unknown" = 8)
 
 ################################################################################
 
-# richness by host_family - fig 3a
+# richness by host family
 
 scler_df <- df %>% filter (df$scleractinia == 1)
 scler_df$richness <- rowSums(scler_df %>% select(starts_with("x")) > 0, na.rm = TRUE)
@@ -160,7 +160,6 @@ print(p_family_richness)
 ################################################################################
 
 ## flower plot modified to show number of unique metabolites in each family
-## fig 3b
 
 draw_flower <- function(data, group_var) {
   group_summary <- data %>%
@@ -279,7 +278,7 @@ core_fisher <- fisher(core_df, met_df) %>%
 
 
 #######################
-# venn by host_origin - fig 3c
+# venn by origin
 
 core_filtered <- core_df %>% 
   filter(refined_origin != "Unknown")
@@ -316,7 +315,7 @@ p_a <- ggvenn(list_all, fill_color = venn_fill, stroke_size = 0.5, set_name_size
 
 ################################################################################
 
-# volcano - fig 3d
+# volcano 
 # choose only metabolites in core_df
 core_abundance_df <- df %>%
   select(sample, all_of(core_metabolite_ids), scleractinia)
@@ -570,19 +569,16 @@ make_volcano <- function(selected_df, outpath = NULL) {
   return(p)
 }
 
-###### Figure s13A
 p_volcano_scler_all <- make_volcano(
   met_df_scler_all,
   here("misc", "figs/pqn", "volcano_scler_all.jpg")
 )
 
-######### Figure s13B
 p_volcano_non_scler_all <- make_volcano(
   met_df_non_scler_all,
   here("misc", "figs/pqn", "volcano_non_scler_all.jpg")
 )
 
-# combine figure s13
 volcano_ubiquitous <- plot_grid(
   p_volcano_scler_all, 
   p_volcano_non_scler_all, 
@@ -624,7 +620,6 @@ draw_venn_comparison <- function(data, group_var, custom_palette) {
 df_bleach <- df %>% filter(bleaching != "Not Applicable", !is.na(bleaching)) %>%
   filter(scleractinia == 1)
 
-# figure S12
 # scleractinian metabolites by bleaching status
 venn_bleach <- draw_venn_comparison(data = df_bleach, 
                                     group_var = "bleaching", 
@@ -638,7 +633,6 @@ ggsave(
   dpi = 300
 )
 
-# figure s11
 # scleractinian metabolites by location
 df_loc <- df %>% filter(!is.na(location)) %>% filter(scleractinia == 1)
 venn_loc <- draw_venn_comparison(df_loc, "location", cols_location)
