@@ -18,7 +18,7 @@ library(cowplot)
 library(here)
 
 # read data
-df <- read.csv(here("Cleaned data CSVs", "ITS2full_PQN_Sep17.csv"))
+df <- read.csv(here("Cleaned data CSVs", "ITS2_PQN_Sep28.csv"))
 df$X <- NULL
 met_df <- read.csv(here("Cleaned data CSVs", "merged_met_plot_df.csv"))
 
@@ -497,8 +497,10 @@ p <- ggplot(pcoa_points, aes(x = PCoA1, y = PCoA2, color = ITS2.Letter, fill = I
   theme_pubr() +
   theme(legend.position = "right")
 p
+
 ggsave(here("misc", "figs/pqn", "its2_permanova_location.pdf"), 
        p, width = 7, height = 6, dpi = 300)
+
 ################################################################################
 
 its2_permanova_result <- adonis2(
@@ -874,7 +876,7 @@ volcano_list <- lapply(stats_list, function(df) {
     xlim(-10, 10) +
     ylim(0, 20) +
     theme_pubr() +
-    theme(legend.position = "bottom", # Positioned for extraction
+    theme(legend.position = "bottom", 
           plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
           axis.title = element_text(size = 10))
 })
@@ -884,7 +886,7 @@ legend_b <- get_legend(
     theme(legend.position = "bottom",
           legend.title = element_text(size = 14),
           legend.text = element_text(size = 12)) +
-    guides(color = guide_legend(nrow = 3, override.aes = list(size = 4))) # Makes legend "taller"
+    guides(color = guide_legend(nrow = 3, override.aes = list(size = 4))) 
 )
 
 volcano_list_no_legend <- lapply(volcano_list, function(p) p + theme(legend.position = "none"))
